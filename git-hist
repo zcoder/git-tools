@@ -1,0 +1,22 @@
+
+case $1 in
+ me) 
+    git log --pretty=format:'%h [%ai] %s' --author="`git config --get user.name`"
+    ;;
+ mywork) 
+    git log -p --pretty=format:'%n%n%n *************** %h [%ai] %s ************* %n' --author="`git config --get user.name`"
+    ;;
+ my) 
+    git log --pretty=format:'%h was %an, %ar, message: %s' --author="`git config --get user.name`"
+    ;;
+ all)
+    git log --pretty=format:'%h [%ai] [%an] %s' 
+    ;;
+ allwork)
+    git log -p --pretty=format:'%n%n%n ************** %h [%ai] [%an] %s *********** %n'
+    ;;
+ *)
+    git log --pretty=format:'%h was %an, %ar, message: %s'
+    ;;
+esac
+

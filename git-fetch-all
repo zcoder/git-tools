@@ -1,0 +1,9 @@
+#!/bin/bash
+
+PathToHome="/home/zhenka/work"
+
+while read gitrepo
+do
+    cd ${PathToHome}/${gitrepo}
+    git fetch --all
+done < ${PathToHome}/scripts/git.fetch-auto

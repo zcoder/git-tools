@@ -1,0 +1,64 @@
+COMMAND="${0#*-}"
+GIT_REPO_DIR="$( git rev-parse --show-toplevel )"
+GIT_IGNORE_FILE="fail"
+
+case "${COMMAND}" in
+    exclude)
+            GIT_IGNORE_FILE="${GIT_REPO_DIR}/.git/info/exclude"
+            ;;
+    ignore) 
+            GIT_IGNORE_FILE="${GIT_REPO_DIR}/.gitignore"
+            ;;
+        *)
+            echo "AHTUNG"
+            exit
+            ;;
+esac;
+echo "work with [${GIT_IGNORE_FILE}]"
+echo
+
+while [ 1 ]; do
+FILES=$( git status --porcelain | egrep -o "^[\?].*" | sed -e 's/?? /\//' | sed -e 's/\ /\\ /g' )
+
+
+if [ "_${FILES}" != "_" ]; then
+    echo -n "$FILES" | cat -n
+else 
+    echo -n "nothing to be ignored ..."
+fi
+    echo " "
+    echo " "
+    echo "Enter number or (<e>dit| <p>rint | <q>uit | <all> to ignore all)"
+
+
+read y;
+case $y in
+ [[:digit:]] | [[:digit:]][[:digit:]]) 
+    
+    IGNORE=`echo "$FILES" | sed "$y!D"`
+    if [ "_$IGNORE" != "_" ]; then
+        echo "*********************"
+        echo "*** file ${IGNORE} now is ignored"
+        echo "*********************"
+        echo "$IGNORE" >> "${GIT_IGNORE_FILE}"
+    fi
+    ;;
+ q) 
+    exit
+    ;;
+ all)
+    echo "****ADD TO IGNORE****"
+    echo "$FILES" 
+    echo "*********************"
+
+    echo "$FILES" >> "${GIT_IGNORE_FILE}"
+    ;;
+ p)
+    cat -n "${GIT_IGNORE_FILE}" | less
+    ;;
+ e)
+    $EDITOR "${GIT_IGNORE_FILE}"
+    ;;
+esac;
+
+done;

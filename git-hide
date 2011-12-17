@@ -1,0 +1,58 @@
+#!/bin/bash
+COMMAND="${0#*-}"
+
+GIT_REPO_DIR="$( git rev-parse --show-toplevel )"
+
+function parse_git_branch {
+  git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/\1/"
+}
+
+CUR="$(parse_git_branch)"
+if [ "_${CUR}" = "_${1}" ]; then CH="/bin/true"; else CH="/bin/false"; fi;
+
+if [ "_$1" = "_-h" ]; then echo "lshide hide hidel unhide unhidel hidelfull"; exit 1; fi;
+
+case "${COMMAND}" in
+    lshide) 
+            ls -1 ${GIT_REPO_DIR}/.git/refs/hidden || echo "[FAIL]"
+            ;;
+    
+    unhide)
+            if [ -z "$1" ]; then echo "[FAIL] branch name"; exit 1; fi;
+            echo "Branch restored from refs/hidden/$1"
+            git update-ref refs/heads/$1 refs/hidden/$1 || echo "[FAIL]"
+            ;;
+    hide) 
+            if [ -z "$1" ]; then echo "[FAIL] branch name"; exit 1; fi;
+            echo "Branch saved into refs/hidden/$1"
+            git update-ref refs/hidden/$1 refs/heads/$1 || echo "[FAIL]"
+            ;;
+
+    unhidel)
+            if [ -z "$1" ]; then echo "[FAIL] branch name"; exit 1; fi;
+            $CH && git checkout master
+            echo "Branch restored and deleted from refs/hidden/$1"
+            git update-ref refs/heads/$1 refs/hidden/$1 && git update-ref -d refs/hidden/$1 refs/heads/$1 || echo "[FAIL]"
+            ;;
+    hidel) 
+            if [ -z "$1" ]; then echo "[FAIL] branch name"; exit 1; fi;
+            $CH && git checkout master
+            echo "Branch deleted and saved into refs/hidden/$1"
+            git update-ref refs/hidden/$1 refs/heads/$1 && git update-ref -d refs/heads/$1 refs/hidden/$1 || echo "[FAIL]"
+            ;;
+
+    hidelfull)
+            if [ -z "$1" ]; then echo "[FAIL] branch name"; exit 1; fi;
+            $CH && git checkout master
+            echo "Wait for other key to continue SAVE branch into refs/hidden/$1 and delete from local REPO" && read -s -n 1 && echo " [START]"
+            git update-ref refs/hidden/$1 refs/heads/$1 && git update-ref -d refs/heads/$1 refs/hidden/$1 || echo "[FAIL]"
+            
+            echo "Wait for other key fo continue REMOVE branch $1 from REMOTE repo..." && read -s -n 1 && echo " [START]"
+            git publish-branch -d $1 || echo "[FAIL]"
+            ;;
+        *)
+            echo "AHTUNG"
+            exit
+            ;;
+esac;
+

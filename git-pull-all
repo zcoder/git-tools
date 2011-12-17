@@ -1,0 +1,9 @@
+#!/bin/bash
+
+PathToHome="/home/zhenka/work/scripts"
+
+while read gitrepo
+do
+    cd ${PathToHome}/${gitrepo}
+    git pull --all
+done < ${PathToHome}/git.pull-auto

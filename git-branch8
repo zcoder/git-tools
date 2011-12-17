@@ -1,0 +1,2 @@
+#!/bin/bash
+git for-each-ref --format='%(refname:short)' --sort=-authordate --count=8 refs/heads/
