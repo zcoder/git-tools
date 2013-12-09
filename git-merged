@@ -1,0 +1,1 @@
+commit="$(git log -n1 --format=%H ${1} )"; git branch -a --contains "${commit}" 
