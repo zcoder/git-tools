@@ -13,35 +13,35 @@ if [ "_${CUR}" = "_${1}" ]; then CH="/bin/true"; else CH="/bin/false"; fi;
 if [ "_$1" = "_-h" ]; then echo "lshide hide hidel unhide unhidel hidelfull"; exit 1; fi;
 
 case "${COMMAND}" in
-    lshide) 
+    core/git-lshide|lshide) 
             ls -1 ${GIT_REPO_DIR}/.git/refs/hidden || echo "[FAIL]"
             ;;
     
-    unhide)
+    core/git-unhide|unhide)
             if [ -z "$1" ]; then echo "[FAIL] branch name"; exit 1; fi;
             echo "Branch restored from refs/hidden/$1"
             git update-ref refs/heads/$1 refs/hidden/$1 || echo "[FAIL]"
             ;;
-    hide) 
+    core/git-hide|hide) 
             if [ -z "$1" ]; then echo "[FAIL] branch name"; exit 1; fi;
             echo "Branch saved into refs/hidden/$1"
             git update-ref refs/hidden/$1 refs/heads/$1 || echo "[FAIL]"
             ;;
 
-    unhidel)
+    core/git-unhidel|unhidel)
             if [ -z "$1" ]; then echo "[FAIL] branch name"; exit 1; fi;
             $CH && git checkout HEAD^
             echo "Branch restored and deleted from refs/hidden/$1"
             git update-ref refs/heads/$1 refs/hidden/$1 && git update-ref -d refs/hidden/$1 refs/heads/$1 || echo "[FAIL]"
             ;;
-    hidel) 
+    core/git-hidel|hidel) 
             if [ -z "$1" ]; then echo "[FAIL] branch name"; exit 1; fi;
             $CH && git checkout HEAD^
             echo "Branch deleted and saved into refs/hidden/$1"
             git update-ref refs/hidden/$1 refs/heads/$1 && git update-ref -d refs/heads/$1 refs/hidden/$1 || echo "[FAIL]"
             ;;
 
-    hidelfull)
+    core/git-hidelfull|hidelfull)
             if [ -z "$1" ]; then echo "[FAIL] branch name"; exit 1; fi;
             $CH && git checkout HEAD^
             echo "Wait for other key to continue SAVE branch into refs/hidden/$1 and delete from local REPO" && read -s -n 1 && echo " [START]"
@@ -51,7 +51,7 @@ case "${COMMAND}" in
             git publish-branch -d $1 || echo "[FAIL]"
             ;;
         *)
-            echo "AHTUNG"
+            echo "AHTUNG: unknown commain ${COMMAND}"
             exit
             ;;
 esac;
