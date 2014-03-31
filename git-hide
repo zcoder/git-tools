@@ -30,20 +30,20 @@ case "${COMMAND}" in
 
     unhidel)
             if [ -z "$1" ]; then echo "[FAIL] branch name"; exit 1; fi;
-            $CH && git checkout master
+            $CH && git checkout HEAD^
             echo "Branch restored and deleted from refs/hidden/$1"
             git update-ref refs/heads/$1 refs/hidden/$1 && git update-ref -d refs/hidden/$1 refs/heads/$1 || echo "[FAIL]"
             ;;
     hidel) 
             if [ -z "$1" ]; then echo "[FAIL] branch name"; exit 1; fi;
-            $CH && git checkout master
+            $CH && git checkout HEAD^
             echo "Branch deleted and saved into refs/hidden/$1"
             git update-ref refs/hidden/$1 refs/heads/$1 && git update-ref -d refs/heads/$1 refs/hidden/$1 || echo "[FAIL]"
             ;;
 
     hidelfull)
             if [ -z "$1" ]; then echo "[FAIL] branch name"; exit 1; fi;
-            $CH && git checkout master
+            $CH && git checkout HEAD^
             echo "Wait for other key to continue SAVE branch into refs/hidden/$1 and delete from local REPO" && read -s -n 1 && echo " [START]"
             git update-ref refs/hidden/$1 refs/heads/$1 && git update-ref -d refs/heads/$1 refs/hidden/$1 || echo "[FAIL]"
             
